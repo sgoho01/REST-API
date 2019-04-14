@@ -2,25 +2,29 @@ package com.ghsong.restapi.events;
 
 import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Builder @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter @EqualsAndHashCode(of = "id")
+@Entity
 public class Event {
 
-    private Integer id;
-    private String name;
-    private String description;
-    private LocalDateTime beginEnrollmentDateTime;
-    private LocalDateTime closeEnrollmentDateTime;
-    private LocalDateTime beginEventDateTime;
-    private LocalDateTime endEventDateTime;
-    private String location;    // (optional) 없으면 온라인 모임
-    private int basePrice;  // (optional)
-    private int maxPrice;   // (optional)
-    private int limitOfEnrollment;
+    @Id @GeneratedValue
+    private Integer id;                                             // ID
+    private String name;                                            // 이름
+    private String description;                                     // 설명
+    private LocalDateTime beginEnrollmentDateTime;                  // 이벤트 등록 시간
+    private LocalDateTime closeEnrollmentDateTime;                  // 이벤트 종료 시간
+    private LocalDateTime beginEventDateTime;                       // 이벤트 시작 일시
+    private LocalDateTime endEventDateTime;                         // 이벤트 종료 일시
+    private String location;    // (optional) 없으면 온라인 모임      // 위치
+    private int basePrice;  // (optional)                           // 등록비
+    private int maxPrice;   // (optional)                           // max
+    private int limitOfEnrollment;                                  // 최대 참가인원
     private boolean offline;
     private boolean free;
+    @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
 
 }
