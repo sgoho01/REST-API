@@ -1,17 +1,15 @@
 package com.ghsong.restapi.events;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Builder @AllArgsConstructor @NoArgsConstructor
-@Getter @Setter @EqualsAndHashCode(of = "id")
-@Entity
-public class Event {
+@Data @Builder @NoArgsConstructor @AllArgsConstructor
+public class EventDto {
 
-    @Id @GeneratedValue
-    private Integer id;                                             // ID
     private String name;                                            // 이름
     private String description;                                     // 설명
     private LocalDateTime beginEnrollmentDateTime;                  // 이벤트 등록 시간
@@ -22,9 +20,5 @@ public class Event {
     private int basePrice;  // (optional)                           // 등록비
     private int maxPrice;   // (optional)                           // max
     private int limitOfEnrollment;                                  // 최대 참가인원
-    private boolean offline;
-    private boolean free;
-    @Enumerated(EnumType.STRING)
-    private EventStatus eventStatus = EventStatus.DRAFT;
 
 }
