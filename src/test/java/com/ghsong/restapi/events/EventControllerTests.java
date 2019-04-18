@@ -134,6 +134,14 @@ public class EventControllerTests {
         this.mockMvc.perform(post("/api/events")
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(this.objectMapper.writeValueAsString(eventDto)))
-                .andExpect(status().isBadRequest());
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                // 에러를 발생하는데 설정을 하지 않으면 해당 에러를 리턴못함
+                // Errors가 Bean Serializer를 하지 못하므로
+                // 리턴 body에 errors를 담고 해당 errors를 serialize할 수 있도록 ErrosSerializer 클래스 생성
+                .andExpect(jsonPath("$[0].objectName").exists())
+                .andExpect(jsonPath("$[0].defaultMessage").exists())
+                .andExpect(jsonPath("$[0].code").exists())
+                ;
     }
 }
