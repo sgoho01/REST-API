@@ -3,13 +3,19 @@ package com.ghsong.restapi.events;
 import com.ghsong.restapi.common.ErrorsResource;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,6 +67,20 @@ public class EventController {
         eventResource.add(new Link("/docs/index.html#resources-events-create").withRel("profile"));
         return ResponseEntity.created(createUri).body(eventResource);
     }
+
+    @GetMapping
+    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
+        // Pageable :: Spring에서 제공해주는 페이징 인터페이스. page, size, sort 변수 제공
+        Page<Event> page = this.eventRepository.findAll(pageable);
+
+        // PagedResourcesAssembler :: url 리소스를 추가해주도록 도와주는 클래스
+        // e -> new EvnetResource(e) :: 각 로우데이터에 대한 리소스 추가
+        PagedResources<Resource<Event>> pageResources = assembler.toResource(page, e -> new EventResource(e));
+        pageResources.add(new Link("/docs/index.html#resources-events-list").withRel("profile"));
+        return ResponseEntity.ok(pageResources);
+
+    }
+
 
     private ResponseEntity badRequest(Errors errors) {
         return ResponseEntity.badRequest().body(new ErrorsResource(errors));
