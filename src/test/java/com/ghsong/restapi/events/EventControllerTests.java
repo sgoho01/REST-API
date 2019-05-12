@@ -213,14 +213,14 @@ public class EventControllerTests {
 
 
     @Test
-    @TestDescription("30개의 이벤트를 10개씩 두번째 페이지 조회")
+    @TestDescription("30개의 이벤트를 10개씩 두번째 페이지 조회하기")
     public void queryEvents() throws Exception {
         // Given
         IntStream.range(0, 30).forEach(i -> {
             this.generateEvent(i);
         });
 
-        // When
+        // When & Then
         this.mockMvc.perform(get("/api/events")
                     .param("page", "1")
                     .param("size", "10")
@@ -236,12 +236,41 @@ public class EventControllerTests {
         ;
     }
 
-    private void generateEvent(int i) {
+
+    @Test
+    @TestDescription("기존의 이벤트를 하나 조회하기")
+    public void getEvent() throws Exception {
+        // Given
+        Event event = this.generateEvent(100);
+
+        // When & Then
+        this.mockMvc.perform(get("/api/events/{id}", event.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").exists())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("get-an-event"))
+        ;
+
+
+    }
+
+    @Test
+    @TestDescription("없는 이벤트를 조회했을 경우 404 응답받기")
+    public void getEvent404() throws Exception {
+        // When & Then
+        this.mockMvc.perform(get("/api/events/{id}", 1213))
+                .andExpect(status().isNotFound());
+    }
+
+    private Event generateEvent(int i) {
         Event event = Event.builder()
                 .name("event : " + i)
                 .description("test event")
                 .build();
 
-        this.eventRepository.save(event);
+        return this.eventRepository.save(event);
     }
 }
