@@ -1,8 +1,10 @@
 package com.ghsong.restapi.configs;
 
 import com.ghsong.restapi.accounts.Account;
+import com.ghsong.restapi.accounts.AccountRepository;
 import com.ghsong.restapi.accounts.AccountRole;
 import com.ghsong.restapi.accounts.AccountService;
+import com.ghsong.restapi.common.AppProperties;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -34,14 +36,25 @@ public class AppConfig  {
             @Autowired
             AccountService accountService;
 
+            @Autowired
+            AppProperties appProperties;
+
             @Override
             public void run(ApplicationArguments args) throws Exception {
-                Account account = Account.builder()
-                        .email("ghsong@email.com")
-                        .password("ghsong")
+
+                Account admin = Account.builder()
+                        .email(appProperties.getAdminUsername())
+                        .password(appProperties.getAdminPassword())
                         .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                         .build();
-                accountService.saveAccount(account);
+                accountService.saveAccount(admin);
+
+                Account user = Account.builder()
+                        .email(appProperties.getUserUsername())
+                        .password(appProperties.getUserPassword())
+                        .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
+                        .build();
+                accountService.saveAccount(user);
             }
         };
     }

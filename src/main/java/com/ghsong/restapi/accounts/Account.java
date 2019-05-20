@@ -13,6 +13,7 @@ public class Account {
     @Id @GeneratedValue
     private int id;
 
+    @Column(unique = true)
     private String name;
 
     private String password;
